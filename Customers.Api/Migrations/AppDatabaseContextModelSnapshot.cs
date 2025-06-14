@@ -44,7 +44,7 @@ namespace Customers.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Address");
+                    b.ToTable("Address", (string)null);
                 });
 
             modelBuilder.Entity("Customers.Api.Domain.Customer", b =>
@@ -109,7 +109,7 @@ namespace Customers.Api.Migrations
 
                     b.HasIndex("PhoneNumberId");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("Customers.Api.Domain.PhoneNumber", b =>
@@ -135,7 +135,7 @@ namespace Customers.Api.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PhoneNumber");
+                    b.ToTable("PhoneNumber", (string)null);
                 });
 
             modelBuilder.Entity("Customers.Api.Domain.Customer", b =>

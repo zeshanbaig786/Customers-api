@@ -17,6 +17,8 @@ public class Customer: BaseEntity
     [Required]
     [EmailAddress] // Ensures valid email format
     public string EmailAddress { get; set; } = string.Empty; // Unique email address
+    [Required] // Ensures phone number is provided
+    public Guid PhoneNumberId { get; set; } // Foreign key for phone number
     [Required]
     public PhoneNumber PhoneNumber { get; set; }
 
@@ -24,6 +26,7 @@ public class Customer: BaseEntity
     [DataType(DataType.Date)] // Specifies that this is a date type
     [Range(typeof(DateTime), "1900-01-01", "2100-12-31", ErrorMessage = "Date of birth must be between 1900 and 2100.")]
     public DateTime DateOfBirth { get; set; } // Date of birth
+    public Guid AddressId { get; set; } // Foreign key for address
     [Required] // Ensures address is provided
     public Address Address { get; set; } = new Address(); // Customer's address
     [Required]

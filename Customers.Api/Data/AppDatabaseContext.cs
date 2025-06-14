@@ -1,6 +1,5 @@
 ﻿using Customers.Api.Domain;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace Customers.Api.Data;
 
