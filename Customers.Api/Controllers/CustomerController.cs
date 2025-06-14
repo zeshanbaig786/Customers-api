@@ -1,5 +1,6 @@
 ﻿using Customers.Api.Abstractions;
 using Customers.Api.DTOs;
+using Customers.Api.Models;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -65,7 +66,7 @@ public class CustomerController(ILogger<CustomerController> logger,
         if (result.IsFailed)
         {
             logger.LogError("Failed to create customer: {Errors}", result.Errors);
-            return Conflict(result.Errors.Select(e => e.Message).ToList());
+            return Conflict(ErrorResponse.FromResult(result));
         }
         logger.LogInformation("Successfully created customer with ID {Id}.", result.Value.Id);
         
