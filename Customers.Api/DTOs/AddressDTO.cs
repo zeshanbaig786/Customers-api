@@ -18,7 +18,6 @@ public class AddressDTO
     public string State { get; set; } = string.Empty;
 
     [Required]
-    [RegularExpression(@"^\d{5}(-\d{4})?$", ErrorMessage = "Invalid postal code format.")]
     public string PostalCode { get; set; } = string.Empty;
 
     public static AddressDTO From(Address customerAddress)

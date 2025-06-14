@@ -1,9 +1,12 @@
-using Customers.Api.Abstractions;
-using Customers.Api.Services;
-using Serilog;
 using System;
+using Customers.Api.Abstractions;
 using Customers.Api.Data;
+using Customers.Api.Services;
+using Customers.Api.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,8 @@ builder.Services.AddDbContext<AppDatabaseContext>(options =>
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddValidatorsFromAssemblyContaining<CustomerCreateDtoValidator>();
 
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 

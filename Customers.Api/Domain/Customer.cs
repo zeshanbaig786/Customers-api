@@ -28,7 +28,7 @@ public class Customer: BaseEntity
     public DateTime DateOfBirth { get; set; } // Date of birth
     public Guid AddressId { get; set; } // Foreign key for address
     [Required] // Ensures address is provided
-    public Address Address { get; set; } = new Address(); // Customer's address
+    public Address Address { get; set; } // Customer's address
     [Required]
     [StringLength(20, MinimumLength = 1)] // Limits length of customer type
     [RegularExpression(@"^[a-zA-Z\s]*$", ErrorMessage = "Customer type can only contain letters and spaces.")] // Validates customer type format

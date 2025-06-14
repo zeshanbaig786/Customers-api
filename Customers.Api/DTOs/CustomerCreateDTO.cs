@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Customers.Api.Domain;
 
 namespace Customers.Api.DTOs;
 
@@ -44,4 +45,30 @@ public class CustomerCreateDTO
 
     [StringLength(500, MinimumLength = 0)]
     public string? Notes { get; set; }
+
+    public Customer ToCustomer()
+    {
+        return new Customer
+        {
+            Id = Guid.NewGuid(),
+            FirstName = FirstName,
+            MiddleName = MiddleName,
+            LastName = LastName,
+            EmailAddress = EmailAddress,
+            PhoneNumber = new PhoneNumber(
+                    PhoneNumber.CountryCode,
+                PhoneNumber.AreaCode,
+                PhoneNumber.Number),
+            DateOfBirth = DateOfBirth,
+            Address = new Address(
+                Address.Street,
+                Address.City,
+                Address.State,
+                Address.PostalCode),
+            CustomerType = CustomerType,
+            Status = Status,
+            Notes = Notes,
+            CreatedAt = DateTime.UtcNow
+        };
+    }
 }

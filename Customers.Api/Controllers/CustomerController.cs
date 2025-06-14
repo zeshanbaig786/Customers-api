@@ -31,10 +31,21 @@ public class CustomerController(ILogger<CustomerController> logger,
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(CustomerReadDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<CustomerReadDTO> GetCustomerById(Guid id)
+    public async Task<ActionResult<CustomerReadDTO>> GetCustomerById(Guid id)
     {
-        // Implementation here
-        return Ok();
+        Result<CustomerReadDTO?> result = await customerService.GetByIdAsync(id);
+        if (result.IsFailed)
+        {
+            logger.LogError("Failed to retrieve customer with ID {Id}: {Error}", id, result.Errors);
+            return NotFound($"Customer with ID {id} not found.");
+        }
+        if (result.Value is null)
+        {
+            logger.LogWarning("Customer with ID {Id} not found.", id);
+            return NotFound($"Customer with ID {id} not found.");
+        }
+        logger.LogInformation("Successfully retrieved customer with ID {Id}.", id);
+        return Ok(result.Value);
     }
 
     // POST: api/customer
@@ -42,10 +53,23 @@ public class CustomerController(ILogger<CustomerController> logger,
     [ProducesResponseType(typeof(CustomerReadDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public ActionResult<CustomerReadDTO> CreateCustomer([FromBody] CustomerCreateDTO dto)
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<CustomerReadDTO>> CreateCustomer([FromBody] CustomerCreateDTO dto)
     {
-        // Implementation here
-        return CreatedAtAction(nameof(GetCustomerById), new { id = Guid.NewGuid() }, null);
+        if (!ModelState.IsValid)
+        {
+            logger.LogWarning("Invalid model state for customer creation: {Errors}", ModelState.Values.SelectMany(v => v.Errors));
+            return BadRequest(ModelState);
+        }
+        Result<CustomerReadDTO> result = await customerService.CreateAsync(dto);
+        if (result.IsFailed)
+        {
+            logger.LogError("Failed to create customer: {Errors}", result.Errors);
+            return Conflict(result.Errors.Select(e => e.Message).ToList());
+        }
+        logger.LogInformation("Successfully created customer with ID {Id}.", result.Value.Id);
+        
+        return CreatedAtAction(nameof(GetCustomerById), new { id = result.Value.Id }, null);
     }
 
     // PUT: api/customer/{id}
