@@ -5,7 +5,7 @@ namespace Customers.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CustomerController : ControllerBase
+public class CustomerController(ILogger<CustomerController> logger) : ControllerBase
 {
     // GET: api/customer
     [HttpGet]
