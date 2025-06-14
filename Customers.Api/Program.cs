@@ -1,6 +1,9 @@
 using Customers.Api.Abstractions;
 using Customers.Api.Services;
 using Serilog;
+using System;
+using Customers.Api.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +15,8 @@ builder.Host.UseSerilog((ctx, lc) =>
         .WriteTo.Console()
         .ReadFrom.Configuration(ctx.Configuration);
 });
+builder.Services.AddDbContext<AppDatabaseContext>(options =>
+    options.UseSqlite("Data Source=customers.db"));
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

@@ -1,4 +1,5 @@
 ﻿using Customers.Api.Abstractions;
+using Customers.Api.Data;
 using Customers.Api.DTOs;
 
 namespace Customers.Api.Services;
