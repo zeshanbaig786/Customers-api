@@ -13,11 +13,10 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Logging.ClearProviders();
 builder.Host.UseSerilog((ctx, lc) =>
-{
     lc.Enrich.FromLogContext()
         .WriteTo.Console()
-        .ReadFrom.Configuration(ctx.Configuration);
-});
+        .ReadFrom.Configuration(ctx.Configuration)
+    );
 builder.Services.AddDbContext<AppDatabaseContext>(options =>
     options.UseSqlite("Data Source=customers.db"));
 builder.Services.AddControllers();
@@ -29,6 +28,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<CustomerCreateDtoValidator>
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 WebApplication app = builder.Build();
+app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

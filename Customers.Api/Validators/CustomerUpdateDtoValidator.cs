@@ -17,9 +17,9 @@ public class CustomerUpdateDtoValidator: AbstractValidator<CustomerUpdateDTO>
             .NotEmpty().WithMessage("Last name is required.")
             .Length(1, 100).WithMessage("Last name must be between 1 and 100 characters.")
             .Matches(@"^[a-zA-Z\s]*$").WithMessage("Last name can only contain letters and spaces.");
-        RuleFor(c => c.EmailAddress)
+        /*RuleFor(c => c.EmailAddress)
             .NotEmpty().WithMessage("Email address is required.")
-            .EmailAddress().WithMessage("Invalid email format.");
+            .EmailAddress().WithMessage("Invalid email format.");*/
         RuleFor(c => c.PhoneNumber)
             .NotNull().WithMessage("Phone number is required.");
         RuleFor(c => c.DateOfBirth)

@@ -23,6 +23,8 @@ public class CustomerService(ILogger<CustomerService> logger,
         try
         {
             List<CustomerReadDTO> customerReadDtos = await database.Customers
+                .Include(d => d.PhoneNumber)
+                .Include(d => d.Address)
                 .Select(s => CustomerReadDTO.From(s))
                 .ToListAsync();
             logger.LogInformation("Successfully retrieved {Count} customers.", customerReadDtos.Count);
@@ -41,6 +43,8 @@ public class CustomerService(ILogger<CustomerService> logger,
         try
         {
             CustomerReadDTO? customer = await database.Customers
+                .Include(d => d.PhoneNumber)
+                .Include(d => d.Address)
                 .Where(c => c.Id == id)
                 .Select(c => CustomerReadDTO.From(c))
                 .SingleOrDefaultAsync();
@@ -111,6 +115,8 @@ public class CustomerService(ILogger<CustomerService> logger,
             }
 
             Customer? customer = await database.Customers
+                .Include(d => d.PhoneNumber)
+                .Include(d => d.Address)
                 .SingleOrDefaultAsync(d => d.Id == id);
             if (customer is null)
             {
@@ -171,7 +177,8 @@ public class CustomerService(ILogger<CustomerService> logger,
                         .ToList());
             }
             Customer? customer = await database.Customers
-                .Include(customer => customer.Address)
+                .Include(d => d.PhoneNumber)
+                .Include(d => d.Address)
                 .SingleOrDefaultAsync(d => d.Id == id);
             if (customer is null)
             {
@@ -185,7 +192,7 @@ public class CustomerService(ILogger<CustomerService> logger,
         }
         catch (Exception e)
         {
-            logger.LogError(e, 
+            logger.LogError(e,
                 "An error occurred while updating address for customer with ID {Id}.", id);
             return Result.Fail<bool>("An error occurred while updating the customer's address.");
         }
@@ -205,7 +212,8 @@ public class CustomerService(ILogger<CustomerService> logger,
                         .ToList());
             }
             Customer? customer = await database.Customers
-                .Include(customer => customer.PhoneNumber)
+                .Include(d => d.PhoneNumber)
+                .Include(d => d.Address)
                 .SingleOrDefaultAsync(d => d.Id == id);
             if (customer is null)
             {
@@ -231,6 +239,8 @@ public class CustomerService(ILogger<CustomerService> logger,
         try
         {
             Customer? customer = await database.Customers
+                .Include(d => d.PhoneNumber)
+                .Include(d => d.Address)
                 .SingleOrDefaultAsync(c => c.Id == id);
             if (customer is null)
             {

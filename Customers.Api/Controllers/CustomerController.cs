@@ -17,15 +17,14 @@ public class CustomerController(ILogger<CustomerController> logger,
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<CustomerReadDTO>>> GetAllCustomers()
     {
-        Result<List<CustomerReadDTO>> allCustomers = await customerService.GetAllAsync();
-        if (allCustomers.IsFailed)
+        Result<List<CustomerReadDTO>> result = await customerService.GetAllAsync();
+        if (result.IsFailed)
         {
-            logger.LogError("Failed to retrieve all customers: {Error}", allCustomers.Errors);
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                "An error occurred while retrieving customers.");
+            logger.LogError("Failed to retrieve all customers: {Error}", result.Errors);
+            return BadRequest(ErrorResponse.FromResult(result));
         }
-        logger.LogInformation("Successfully retrieved {Count} customers.", allCustomers.Value.Count);
-        return Ok(allCustomers.Value);
+        logger.LogInformation("Successfully retrieved {Count} customers.", result.Value.Count);
+        return Ok(result.Value);
     }
 
     // GET: api/customer/{id}
@@ -38,7 +37,7 @@ public class CustomerController(ILogger<CustomerController> logger,
         if (result.IsFailed)
         {
             logger.LogError("Failed to retrieve customer with ID {Id}: {Error}", id, result.Errors);
-            return NotFound($"Customer with ID {id} not found.");
+            return BadRequest(ErrorResponse.FromResult(result));
         }
         if (result.Value is null)
         {
@@ -66,7 +65,7 @@ public class CustomerController(ILogger<CustomerController> logger,
         if (result.IsFailed)
         {
             logger.LogError("Failed to create customer: {Errors}", result.Errors);
-            return Conflict(ErrorResponse.FromResult(result));
+            return BadRequest(ErrorResponse.FromResult(result));
         }
         logger.LogInformation("Successfully created customer with ID {Id}.", result.Value.Id);
         
@@ -149,9 +148,26 @@ public class CustomerController(ILogger<CustomerController> logger,
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult UpdateCustomerPhoneNumber(Guid id, [FromBody] CustomerUpdatePhoneNumberDTO dto)
+    public async Task<IActionResult> UpdateCustomerPhoneNumber(Guid id,
+        [FromBody] CustomerUpdatePhoneNumberDTO dto)
     {
-        // Implementation here
+        if (!ModelState.IsValid)
+        {
+            logger.LogWarning("Invalid model state for customer phone number update: {Errors}", ModelState.Values.SelectMany(v => v.Errors));
+            return BadRequest(ModelState);
+        }
+        Result<bool> result = await customerService.UpdatePhoneNumberAsync(id, dto);
+        if (result.IsFailed)
+        {
+            logger.LogError("Failed to update phone number for customer with ID {Id}: {Errors}", id, result.Errors);
+            return BadRequest(ErrorResponse.FromResult(result));
+        }
+        if (!result.Value)
+        {
+            logger.LogWarning("Customer with ID {Id} not found for phone number update.", id);
+            return NotFound($"Customer with ID {id} not found.");
+        }
+        logger.LogInformation("Successfully updated phone number for customer with ID {Id}.", id);
         return NoContent();
     }
 
@@ -160,9 +176,25 @@ public class CustomerController(ILogger<CustomerController> logger,
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult UpdateCustomerStatus(Guid id, [FromBody] CustomerUpdateStatusDTO dto)
+    public async Task<IActionResult> UpdateCustomerStatus(Guid id, [FromBody] CustomerUpdateStatusDTO dto)
     {
-        // Implementation here
+        if (!ModelState.IsValid)
+        {
+            logger.LogWarning("Invalid model state for customer status update: {Errors}", ModelState.Values.SelectMany(v => v.Errors));
+            return BadRequest(ModelState);
+        }
+        Result<bool> result = await customerService.UpdateStatusAsync(id, dto);
+        if (result.IsFailed)
+        {
+            logger.LogError("Failed to update status for customer with ID {Id}: {Errors}", id, result.Errors);
+            return BadRequest(ErrorResponse.FromResult(result));
+        }
+        if (!result.Value)
+        {
+            logger.LogWarning("Customer with ID {Id} not found for status update.", id);
+            return NotFound($"Customer with ID {id} not found.");
+        }
+        logger.LogInformation("Successfully updated status for customer with ID {Id}.", id);
         return NoContent();
     }
 }
