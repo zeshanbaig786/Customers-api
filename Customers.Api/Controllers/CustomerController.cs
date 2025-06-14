@@ -1,19 +1,30 @@
-﻿using Customers.Api.DTOs;
+﻿using Customers.Api.Abstractions;
+using Customers.Api.DTOs;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Customers.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CustomerController(ILogger<CustomerController> logger) : ControllerBase
+public class CustomerController(ILogger<CustomerController> logger,
+    ICustomerService customerService) : ControllerBase
 {
     // GET: api/customer
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<CustomerReadDTO>), StatusCodes.Status200OK)]
-    public ActionResult<IEnumerable<CustomerReadDTO>> GetAllCustomers()
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<IEnumerable<CustomerReadDTO>>> GetAllCustomers()
     {
-        // Implementation here
-        return Ok();
+        Result<List<CustomerReadDTO>> allCustomers = await customerService.GetAllAsync();
+        if (allCustomers.IsFailed)
+        {
+            logger.LogError("Failed to retrieve all customers: {Error}", allCustomers.Errors);
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "An error occurred while retrieving customers.");
+        }
+        logger.LogInformation("Successfully retrieved {Count} customers.", allCustomers.Value.Count);
+        return Ok(allCustomers.Value);
     }
 
     // GET: api/customer/{id}

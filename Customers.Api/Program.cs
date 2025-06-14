@@ -5,7 +5,7 @@ using System;
 using Customers.Api.Data;
 using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Logging.ClearProviders();
@@ -23,7 +23,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

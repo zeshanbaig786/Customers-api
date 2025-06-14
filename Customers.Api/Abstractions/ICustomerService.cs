@@ -1,21 +1,22 @@
 ﻿using Customers.Api.DTOs;
+using FluentResults;
 
 namespace Customers.Api.Abstractions;
 
 public interface ICustomerService
 {
     // Query
-    Task<IEnumerable<CustomerReadDTO>> GetAllAsync();
-    Task<CustomerReadDTO?> GetByIdAsync(Guid id);
+    Task<Result<List<CustomerReadDTO>>> GetAllAsync();
+    Task<Result<CustomerReadDTO?>> GetByIdAsync(Guid id);
 
     // Commands
-    Task<CustomerReadDTO> CreateAsync(CustomerCreateDTO dto);
-    Task<bool> UpdateAsync(Guid id, CustomerUpdateDTO dto);
-    Task<bool> PatchAsync(Guid id, CustomerPatchDTO dto);
-    Task<bool> DeleteAsync(Guid id);
+    Task<Result<CustomerReadDTO>> CreateAsync(CustomerCreateDTO dto);
+    Task<Result<bool>> UpdateAsync(Guid id, CustomerUpdateDTO dto);
+    Task<Result<bool>> PatchAsync(Guid id, CustomerPatchDTO dto);
+    Task<Result<bool>> DeleteAsync(Guid id);
 
     // Sub-attribute updates
-    Task<bool> UpdateAddressAsync(Guid id, CustomerUpdateAddressDTO dto);
-    Task<bool> UpdatePhoneNumberAsync(Guid id, CustomerUpdatePhoneNumberDTO dto);
-    Task<bool> UpdateStatusAsync(Guid id, CustomerUpdateStatusDTO dto);
+    Task<Result<bool>> UpdateAddressAsync(Guid id, CustomerUpdateAddressDTO dto);
+    Task<Result<bool>> UpdatePhoneNumberAsync(Guid id, CustomerUpdatePhoneNumberDTO dto);
+    Task<Result<bool>> UpdateStatusAsync(Guid id, CustomerUpdateStatusDTO dto);
 }

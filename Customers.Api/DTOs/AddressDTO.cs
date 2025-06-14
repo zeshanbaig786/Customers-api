@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Customers.Api.Domain;
 
 namespace Customers.Api.DTOs;
 
@@ -19,4 +20,16 @@ public class AddressDTO
     [Required]
     [RegularExpression(@"^\d{5}(-\d{4})?$", ErrorMessage = "Invalid postal code format.")]
     public string PostalCode { get; set; } = string.Empty;
+
+    public static AddressDTO From(Address customerAddress)
+    {
+        ArgumentNullException.ThrowIfNull(customerAddress);
+        return new AddressDTO
+        {
+            Street = customerAddress.Street,
+            City = customerAddress.City,
+            State = customerAddress.State,
+            PostalCode = customerAddress.PostalCode
+        };
+    }
 }
