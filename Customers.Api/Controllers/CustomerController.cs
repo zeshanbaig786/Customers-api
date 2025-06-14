@@ -78,30 +78,41 @@ public class CustomerController(ILogger<CustomerController> logger,
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult UpdateCustomer(Guid id, [FromBody] CustomerUpdateDTO dto)
+    public async Task<IActionResult> UpdateCustomer(Guid id, [FromBody] CustomerUpdateDTO dto)
     {
-        // Implementation here
+        if (!ModelState.IsValid)
+        {
+            logger.LogWarning("Invalid model state for customer update: {Errors}", ModelState.Values.SelectMany(v => v.Errors));
+            return BadRequest(ModelState);
+        }
+        Result<bool> result = await customerService.UpdateAsync(id, dto);
+        if (result.IsFailed)
+        {
+            logger.LogError("Failed to update customer with ID {Id}: {Errors}", id, result.Errors);
+            return BadRequest(ErrorResponse.FromResult(result));
+        }
+        logger.LogInformation("Successfully updated customer with ID {Id}.", id);
         return NoContent();
     }
-
-    // PATCH: api/customer/{id}
-    [HttpPatch("{id:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult PatchCustomer(Guid id, [FromBody] CustomerPatchDTO dto)
-    {
-        // Implementation here
-        return NoContent();
-    }
-
+    
     // DELETE: api/customer/{id}
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult DeleteCustomer(Guid id)
+    public async Task<IActionResult> DeleteCustomer(Guid id)
     {
-        // Implementation here
+        Result<bool> result = await customerService.DeleteAsync(id);
+        if (result.IsFailed)
+        {
+            logger.LogError("Failed to delete customer with ID {Id}: {Errors}", id, result.Errors);
+            return BadRequest(ErrorResponse.FromResult(result));
+        }
+        if (!result.Value)
+        {
+            logger.LogWarning("Customer with ID {Id} not found for deletion.", id);
+            return NotFound($"Customer with ID {id} not found.");
+        }
+        logger.LogInformation("Successfully deleted customer with ID {Id}.", id);
         return NoContent();
     }
 
@@ -110,9 +121,26 @@ public class CustomerController(ILogger<CustomerController> logger,
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult UpdateCustomerAddress(Guid id, [FromBody] CustomerUpdateAddressDTO dto)
+    public async Task<IActionResult> UpdateCustomerAddress(Guid id,
+        [FromBody] CustomerUpdateAddressDTO dto)
     {
-        // Implementation here
+        if (!ModelState.IsValid)
+        {
+            logger.LogWarning("Invalid model state for customer address update: {Errors}", ModelState.Values.SelectMany(v => v.Errors));
+            return BadRequest(ModelState);
+        }
+        Result<bool> result = await customerService.UpdateAddressAsync(id, dto);
+        if (result.IsFailed)
+        {
+            logger.LogError("Failed to update address for customer with ID {Id}: {Errors}", id, result.Errors);
+            return BadRequest(ErrorResponse.FromResult(result));
+        }
+        if (!result.Value)
+        {
+            logger.LogWarning("Customer with ID {Id} not found for address update.", id);
+            return NotFound($"Customer with ID {id} not found.");
+        }
+        logger.LogInformation("Successfully updated address for customer with ID {Id}.", id);
         return NoContent();
     }
 

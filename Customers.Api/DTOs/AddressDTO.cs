@@ -31,4 +31,13 @@ public class AddressDTO
             PostalCode = customerAddress.PostalCode
         };
     }
+
+    public void UpdateTo(Address customerAddress)
+    {
+        ArgumentNullException.ThrowIfNull(customerAddress);
+        customerAddress.Street = Street;
+        customerAddress.City = City;
+        customerAddress.State = State;
+        customerAddress.PostalCode = PostalCode;
+    }
 }

@@ -30,4 +30,12 @@ public class PhoneNumberDTO
             Number = customerPhoneNumber.Number
         };
     }
+
+    public void UpdateTo(PhoneNumber customerPhoneNumber)
+    {
+        ArgumentNullException.ThrowIfNull(customerPhoneNumber);
+        customerPhoneNumber.CountryCode = CountryCode;
+        customerPhoneNumber.AreaCode = AreaCode;
+        customerPhoneNumber.Number = Number;
+    }
 }

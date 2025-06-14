@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Customers.Api.Domain;
 
 namespace Customers.Api.DTOs;
 
@@ -17,9 +18,6 @@ public class CustomerUpdateDTO
     [RegularExpression(@"^[a-zA-Z\s]*$", ErrorMessage = "Last name can only contain letters and spaces.")]
     public string LastName { get; set; } = string.Empty;
 
-    [Required]
-    [EmailAddress]
-    public string EmailAddress { get; set; } = string.Empty;
 
     [Required]
     public PhoneNumberDTO PhoneNumber { get; set; }
@@ -44,4 +42,18 @@ public class CustomerUpdateDTO
 
     [StringLength(500, MinimumLength = 0)]
     public string? Notes { get; set; }
+
+    public void UpdateTo(Customer customer)
+    {
+        customer.FirstName = FirstName;
+        customer.MiddleName = MiddleName;
+        customer.LastName = LastName;
+        PhoneNumber.UpdateTo(customer.PhoneNumber);
+        customer.DateOfBirth = DateOfBirth;
+        Address.UpdateTo(customer.Address);
+        customer.CustomerType = CustomerType;
+        customer.Status = Status;
+        customer.Notes = Notes;
+        customer.UpdatedAt = DateTime.UtcNow; // Update the last modified date
+    }
 }

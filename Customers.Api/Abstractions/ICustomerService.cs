@@ -12,7 +12,6 @@ public interface ICustomerService
     // Commands
     Task<Result<CustomerReadDTO>> CreateAsync(CustomerCreateDTO dto);
     Task<Result<bool>> UpdateAsync(Guid id, CustomerUpdateDTO dto);
-    Task<Result<bool>> PatchAsync(Guid id, CustomerPatchDTO dto);
     Task<Result<bool>> DeleteAsync(Guid id);
 
     // Sub-attribute updates
